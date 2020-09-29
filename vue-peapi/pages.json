@@ -1,0 +1,19 @@
+{
+	"pages": [{
+		"path": "pages/homes/index",
+		"style": {
+			"navigationBarTitleText": "WELCOME"
+		}
+	}, {
+		"path": "pages/cnarea/cnarea",
+		"style": {
+			"navigationBarTitleText": "CNAREA"
+		}
+	}],
+	"globalStyle": {
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#007AFF",
+		"backgroundColor": "#FFFFFF"
+	}
+}

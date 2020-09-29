@@ -1,0 +1,97 @@
+definitions:
+  cnarea.dto:
+    properties:
+      area_code:
+        description: 行政代码
+        type: integer
+      city_code:
+        description: 区号
+        type: string
+      latitude:
+        description: 纬度
+        type: number
+      longitude:
+        description: 经度
+        type: number
+      merger_name:
+        description: 组合名
+        type: string
+      name:
+        description: 名称
+        type: string
+      pinyin:
+        description: 拼音
+        type: string
+      short_name:
+        description: 简称
+        type: string
+      zip_code:
+        description: 邮政编码
+        type: integer
+    type: object
+  cnarea.queryConditionDTO:
+    properties:
+      name_contains:
+        description: 名称字串
+        type: string
+      page_index:
+        description: 分页页数 从1开始
+        type: integer
+      page_size:
+        description: 分页大小
+        type: integer
+      parent_code:
+        description: 父级区域代码
+        type: string
+      zip_code:
+        description: 邮政编码
+        type: string
+    type: object
+  cnarea.queryResultDTO:
+    properties:
+      code:
+        description: 返回代码 200 成功
+        type: integer
+      data:
+        description: 数据
+        items:
+          $ref: '#/definitions/cnarea.dto'
+        type: array
+      message:
+        description: 错误说明
+        type: string
+      page_index:
+        description: 当前页码 从1开始
+        type: integer
+      page_size:
+        description: 分页大小
+        type: integer
+      total_count:
+        description: 当前记录数
+        type: integer
+    type: object
+info:
+  contact: {}
+  license: {}
+paths:
+  /cnarea:
+    post:
+      consumes:
+      - application/json
+      description: 通过父级区域代码、邮政编码等查询条件分页查询符合条件的区域信息
+      parameters:
+      - description: 查询条件
+        in: body
+        name: condition
+        required: true
+        schema:
+          $ref: '#/definitions/cnarea.queryConditionDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/cnarea.queryResultDTO'
+      summary: 查询区域信息
+swagger: "2.0"
