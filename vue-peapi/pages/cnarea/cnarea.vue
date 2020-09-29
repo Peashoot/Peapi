@@ -1,9 +1,9 @@
 <template>
 	<view class="container">
-		<uni-combox label="省份:" :candidates="listLevel1" placeholder="请选择省份" v-model="level1"></uni-combox>
+		<uni-combox label="省　份:" :candidates="listLevel1" placeholder="请选择省　份" v-model="level1"></uni-combox>
 		<uni-combox label="直辖市:" :candidates="listLevel2" placeholder="请选择直辖市" v-model="level2" v-if="listLevel2.length > 0"></uni-combox>
-		<uni-combox label="区块:" :candidates="listLevel3" placeholder="请选择区块" v-model="level3" v-if="listLevel3.length > 0"></uni-combox>
-		<uni-combox label="街道:" :candidates="listLevel4" placeholder="请选择街道" v-model="level4" v-if="listLevel4.length > 0"></uni-combox>
+		<uni-combox label="区　块:" :candidates="listLevel3" placeholder="请选择区　块" v-model="level3" v-if="listLevel3.length > 0"></uni-combox>
+		<uni-combox label="街　道:" :candidates="listLevel4" placeholder="请选择街　道" v-model="level4" v-if="listLevel4.length > 0"></uni-combox>
 		<uni-combox label="居委会:" :candidates="listLevel5" placeholder="请选择居委会" v-model="level5" v-if="listLevel5.length > 0"></uni-combox>
 		<map :latitude="latitude" :longitude="longitude" />
 	</view>

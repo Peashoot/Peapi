@@ -8,6 +8,7 @@ import (
 
 // RunConfig 运行参数
 type RunConfig struct {
+	DebugMode      bool           `json:"debug_mode"`  // 调试模式
 	ListenPort     int            `json:"listen_port"` // 监听端口
 	DatabaseConfig DatabaseConfig `json:"database"`    // 数据库配置参数
 	WebhookConfig  WebhookConfig  `json:"webhook"`     // webhook配置参数
@@ -36,10 +37,10 @@ type SwaggerConfig struct {
 
 // AvatarConfig 头像api配置参数
 type AvatarConfig struct {
-	AvatarFileLocalPath    string `json:"local_path"`    // 头像文件夹本地路径
-	AvatarFileNetURL       string `json:"net_url"`       // 头像网络路径
-	AvatarSaveDuration     int    `json:"save_duration"` // 头像文件缓存时间（单位：分钟）
-	AvatarCleanEventPeriod int    `json:"clean_period"`  // 头像定时清理任务轮询间隔（单位：秒）
+	AvatarFileLocalPath  string `json:"local_path"`    // 头像文件夹本地路径
+	AvatarFileNetURL     string `json:"net_url"`       // 头像网络路径
+	AvatarSaveDuration   int    `json:"save_duration"` // 头像文件缓存时间（单位：分钟）
+	AvatarCleanEventCron string `json:"clean_cron"`    // 头像定时清理任务轮询cron规则
 }
 
 // Config 配置项
@@ -48,6 +49,7 @@ var Config *RunConfig
 // DefaultConfig 获取默认配置
 func DefaultConfig() *RunConfig {
 	return &RunConfig{
+		DebugMode:  true,
 		ListenPort: 8080,
 		DatabaseConfig: DatabaseConfig{
 			DBHost: "127.0.0.1",
