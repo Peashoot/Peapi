@@ -1,5 +1,7 @@
 package cnarea
 
+import "math"
+
 // DO 中国区域实体
 type DO struct {
 	RecordID   int     `gorm:"column:id; PRIMARY_KEY"` // 记录id
@@ -19,4 +21,9 @@ type DO struct {
 // TableName 表名
 func (area DO) TableName() string {
 	return "cnarea_2019"
+}
+
+// GetDistance 返回经纬度直线距离
+func (area DO) GetDistance(longitude float64, latitude float64) float64 {
+	return math.Pow(area.Longitude-longitude, 2) + math.Pow(area.Latitude-latitude, 2)
 }

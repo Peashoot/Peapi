@@ -9,20 +9,19 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/peashoot/peapi/common"
 	"github.com/peashoot/peapi/config"
 )
 
-type hookResultDTO struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+type executeResponseDTO struct {
+	common.BaseResponse
 }
 
-// Handle 处理Webhook
-func Handle(c *gin.Context) {
-	resp := &hookResultDTO{
-		Code:    400,
-		Message: "Bad request",
-	}
+// Exceute 处理Webhook
+func Exceute(c *gin.Context) {
+	resp := &executeResponseDTO{}
+	resp.Code = 400
+	resp.Message = "Bad request"
 	//我们这里只接收json的请求体
 	if contentType := c.GetHeader("content-type"); contentType != "application/json" {
 		c.JSON(http.StatusBadRequest, resp)

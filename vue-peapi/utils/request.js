@@ -11,6 +11,9 @@ var sendRequest = function(param, backpage, backtype) {
 
 	//拼接完整请求地址
 	var requestUrl = siteBaseUrl + url;
+	if (siteBaseUrl.endsWith('/') && url.startsWith('/')) {
+		requestUrl = siteBaseUrl + url.substr(1)
+	}
 
 	//请求方式:GET或POST(POST需配置header: {'content-type' : "application/x-www-form-urlencoded"},)
 	if (method) {

@@ -12,24 +12,22 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type requestDTO struct {
+type generateRequestDTO struct {
 	Sex      string `json:"sex"`      // 性别
 	Username string `json:"username"` // 用户名
 }
 
-type responseDTO struct {
-	Code    int    `json:"code"`    // 响应代码
-	Message string `json:"message"` // 错误说明
-	ImgURL  string `json:"imgUrl"`  // 图片URL
+type generateResponseDTO struct {
+	common.BaseResponse
+	ImgURL string `json:"imgUrl"` // 图片URL
 }
 
-// Handle 处理头像生成
-func Handle(c *gin.Context) {
-	response := &responseDTO{
-		Code:    500,
-		Message: "Internal Server Error",
-	}
-	request := &requestDTO{}
+// Generate 处理头像生成
+func Generate(c *gin.Context) {
+	response := &generateResponseDTO{}
+	response.Code = 500
+	response.Message = "Internal Server Error"
+	request := &generateRequestDTO{}
 	if err := c.BindJSON(request); err != nil {
 		c.JSON(http.StatusInternalServerError, response)
 		return

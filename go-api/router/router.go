@@ -12,9 +12,10 @@ import (
 
 // RegisterRouter 注册路由
 func RegisterRouter(engine *gin.Engine) {
-	engine.POST("/cnarea", cnarea.Handle)
-	engine.POST("/webhook", webhook.Handle)
-	engine.POST("/avatar", avatar.Handle)
+	engine.POST("/cnarea/list", cnarea.List)
+	engine.POST("/cnarea/locate", cnarea.Locate)
+	engine.POST("/webhook/execute", webhook.Exceute)
+	engine.POST("/avatar/generate", avatar.Generate)
 	if config.Config.SwaggerConfig.SwaggerEnabled {
 		engine.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}

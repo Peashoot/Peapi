@@ -5,7 +5,8 @@
 		<uni-combox label="区　块:" :candidates="listLevel3" placeholder="请选择区　块" v-model="level3" v-if="listLevel3.length > 0"></uni-combox>
 		<uni-combox label="街　道:" :candidates="listLevel4" placeholder="请选择街　道" v-model="level4" v-if="listLevel4.length > 0"></uni-combox>
 		<uni-combox label="居委会:" :candidates="listLevel5" placeholder="请选择居委会" v-model="level5" v-if="listLevel5.length > 0"></uni-combox>
-		<map :latitude="latitude" :longitude="longitude" />
+		<input v-model="longitude" /><input v-model="latitude" /><button @click="getCurrentLocation">查询</button>
+		<!-- <map :latitude="latitude" :longitude="longitude" /> -->
 	</view>
 </template>
 
@@ -28,8 +29,14 @@
 				listLocation3: [],
 				listLocation4: [],
 				listLocation5: [],
+				levelStore1: '',
+				levelStore2: '',
+				levelStore3: '',
+				levelStore4: '',
+				levelStore5: '',
 				longitude: 0,
 				latitude: 0,
+				locating: false
 			}
 		},
 		created() {
@@ -41,7 +48,7 @@
 				let newCandidates = [];
 				let newAreaList = [];
 				this.sendRequest({
-						url: "cnarea",
+						url: "/cnarea/list",
 						method: "POST",
 						data: {
 							parent_code: parentCode,
@@ -81,7 +88,9 @@
 				return selected;
 			},
 			initData2: function() {
-				this.level2 = '';
+				if (!this.locating) {
+					this.level2 = '';
+				}
 				let selected = this.getSelectedItem1();
 				if (!selected) {
 					return;
@@ -89,7 +98,9 @@
 				let ret = this.initData(selected.area_code);
 				this.listLevel2 = ret.candidates;
 				this.listLocation2 = ret.areaList;
-				this.level3 = '';
+				if (!this.locating) {
+					this.level3 = '';
+				}
 				this.listLevel3 = [];
 				this.listLevel4 = [];
 				this.listLevel5 = [];
@@ -102,7 +113,9 @@
 				return selected;
 			},
 			initData3: function() {
-				this.level3 = '';
+				if (!this.locating) {
+					this.level3 = '';
+				}
 				let selected = this.getSelectedItem2();
 				if (!selected) {
 					return;
@@ -110,7 +123,9 @@
 				let ret = this.initData(selected.area_code);
 				this.listLevel3 = ret.candidates;
 				this.listLocation3 = ret.areaList;
-				this.level4 = '';
+				if (!this.locating) {
+					this.level4 = '';
+				}
 				this.listLevel4 = [];
 				this.listLevel5 = [];
 			},
@@ -122,7 +137,9 @@
 				return selected;
 			},
 			initData4: function() {
-				this.level4 = '';
+				if (!this.locating) {
+					this.level4 = '';
+				}
 				let selected = this.getSelectedItem3();
 				if (!selected) {
 					return;
@@ -140,7 +157,9 @@
 				return selected;
 			},
 			initData5: function() {
-				this.level5 = '';
+				if (!this.locating) {
+					this.level5 = '';
+				}
 				let selected = this.getSelectedItem4();
 				if (!selected) {
 					return;
@@ -157,6 +176,9 @@
 				return selected;
 			},
 			getLocation: function() {
+				if (this.locating) {
+					return;
+				}
 				let selectedItem = this.getSelectedItem1();
 				if (!selectedItem) {
 					return;
@@ -189,20 +211,56 @@
 				this.latitude = selectedItem.latitude;
 			},
 			getCurrentLocation: function() {
-				let innerLong = 0;
-				let innerLat = 0;
-				uni.getLocation({
-					type: 'wgs84',
-					geocode: true,
-					success: function(res) {
-						innerHeight = res.longitude;
-						innerLat = res.latitude;
-						console.log(res.address);
-					}
-				});
-				this.longitude = innerLong;
-				this.latitude = innerLat;
+				this.locating = true;
+				let innerLong = this.longitude;
+				let innerLat = this.latitude;
+				// uni.getLocation({
+				// 	type: 'wgs84',
+				// 	geocode: true,
+				// 	success: function(res) {
+				// 		innerHeight = res.longitude;
+				// 		innerLat = res.latitude;
+				// 	}
+				// });
+				// this.longitude = innerLong;
+				// this.latitude = innerLat;
 				console.log('location:' + this.longitude + ',' + this.latitude);
+				let v = this;
+				this.sendRequest({
+						url: "/cnarea/locate",
+						method: "POST",
+						data: {
+							longtitude: parseFloat(innerLong),
+							latitude: parseFloat(innerLat)
+						},
+						hideLoading: false,
+						success: function(res) {
+							let area = res.area;
+							if (area) {
+								v.levelStore5 = area.name;
+							}
+							area = area.parent;
+							if (area) {
+								v.levelStore4 = area.name;
+							}
+							area = area.parent;
+							if (area) {
+								v.levelStore3 = area.name;
+							}
+							area = area.parent;
+							if (area) {
+								v.levelStore2 = area.name;
+							}
+							area = area.parent;
+							if (area) {
+								v.levelStore1 = area.name;
+							}
+						},
+						fail: function(res) {
+							v.locating = false;
+						}
+					},
+					"", "");
 			},
 		},
 		watch: {
