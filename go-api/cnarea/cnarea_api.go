@@ -44,8 +44,9 @@ type areaDTO struct {
 
 // areaWithParentDTO 传输实体附带父级实体
 type areaWithParentDTO struct {
-	areaDTO
-	Parent *areaWithParentDTO `json:"parent"` // 父节点
+	AreaName    string   `json:"name"`         // 区域名称
+	Parents     []string `json:"parents"`      // 父节点
+	ParentCodes []int64  `json:"parent_codes"` // 父节点代码
 }
 
 // transformDOToDTO 转换数据库实体为传输实体
@@ -65,23 +66,23 @@ func transformDOToDTO(area DO) areaDTO {
 
 // transformDOToDTOWithParant 转换数据库实体为传输实体并带上父级实体
 func transformDOToDTOWithParant(area DO) (areaWithParentDTO, error) {
-	inner := transformDOToDTO(area)
-	if area.ParentCode == 0 {
-		return areaWithParentDTO{
-			areaDTO: inner,
-		}, nil
+	dto := areaWithParentDTO{
+		AreaName: area.Name,
 	}
-	var err error
-	area, err = getAreaByCode(area.ParentCode)
-	if err != nil {
-		return areaWithParentDTO{}, err
+	parents := make([]string, 0)
+	parentCodes := make([]int64, 0)
+	for area.ParentCode != 0 {
+		var err error
+		area, err = getAreaByCode(area.ParentCode)
+		if err != nil {
+			return dto, err
+		}
+		parents = append(parents, area.Name)
+		parentCodes = append(parentCodes, area.AreaCode)
 	}
-	var parent areaWithParentDTO
-	parent, err = transformDOToDTOWithParant(area)
-	return areaWithParentDTO{
-		areaDTO: inner,
-		Parent:  &parent,
-	}, nil
+	dto.Parents = parents
+	dto.ParentCodes = parentCodes
+	return dto, nil
 }
 
 // List 条件查询区域信息
@@ -91,7 +92,7 @@ func transformDOToDTOWithParant(area DO) (areaWithParentDTO, error) {
 // @Accept json
 // @Produce json
 // @Success 200 {object} queryResultDTO
-// @Router /cnarea [post]
+// @Router /cnarea/list [post]
 func List(c *gin.Context) {
 	resp := &listResponseDTO{}
 	resp.Code = 400

@@ -5,8 +5,8 @@
 		<uni-combox label="区　块:" :candidates="listLevel3" placeholder="请选择区　块" v-model="level3" v-if="listLevel3.length > 0"></uni-combox>
 		<uni-combox label="街　道:" :candidates="listLevel4" placeholder="请选择街　道" v-model="level4" v-if="listLevel4.length > 0"></uni-combox>
 		<uni-combox label="居委会:" :candidates="listLevel5" placeholder="请选择居委会" v-model="level5" v-if="listLevel5.length > 0"></uni-combox>
-		<input v-model="longitude" /><input v-model="latitude" /><button @click="getCurrentLocation">查询</button>
-		<!-- <map :latitude="latitude" :longitude="longitude" /> -->
+		<!-- <input v-model="longitude" /><input v-model="latitude" /><button @click="getCurrentLocation">查询</button> -->
+		<map :latitude="latitude" :longitude="longitude" />
 	</view>
 </template>
 
@@ -29,11 +29,6 @@
 				listLocation3: [],
 				listLocation4: [],
 				listLocation5: [],
-				levelStore1: '',
-				levelStore2: '',
-				levelStore3: '',
-				levelStore4: '',
-				levelStore5: '',
 				longitude: 0,
 				latitude: 0,
 				locating: false
@@ -44,9 +39,9 @@
 			this.getCurrentLocation();
 		},
 		methods: {
-			initData: function(parentCode) {
-				let newCandidates = [];
-				let newAreaList = [];
+			initData: function(parentCode, candidates, areaList) {
+				candidates.length = 0;
+				areaList.length = 0;
 				this.sendRequest({
 						url: "/cnarea/list",
 						method: "POST",
@@ -59,22 +54,20 @@
 						success: function(res) {
 							let data = res.data;
 							for (let index in data) {
-								newCandidates.push(data[index].name);
-								newAreaList.push(data[index]);
+								candidates.push(data[index].name);
+								areaList.push(data[index]);
 							}
 						}
 					},
 					"", "");
-				return {
-					candidates: newCandidates,
-					areaList: newAreaList
-				}
+			},
+			showData1: function(name, code) {
+				this.level1 = name;
+				let ret = this.initData(code, this.listLevel2, this.listLocation2);
 			},
 			initData1: function() {
-				let ret = this.initData(0);
-				this.listLevel1 = ret.candidates;
-				this.listLocation1 = ret.areaList;
-				this.level2 = '';
+				this.level1 = '';
+				let ret = this.initData(0, this.listLevel1, this.listLocation1);
 				this.listLevel2 = [];
 				this.listLevel3 = [];
 				this.listLevel4 = [];
@@ -87,20 +80,17 @@
 				});
 				return selected;
 			},
+			showData2: function(name, code) {
+				this.level2 = name;
+				let ret = this.initData(code, this.listLevel3, this.listLocation3);
+			},
 			initData2: function() {
-				if (!this.locating) {
-					this.level2 = '';
-				}
+				this.level2 = '';
 				let selected = this.getSelectedItem1();
 				if (!selected) {
 					return;
 				}
-				let ret = this.initData(selected.area_code);
-				this.listLevel2 = ret.candidates;
-				this.listLocation2 = ret.areaList;
-				if (!this.locating) {
-					this.level3 = '';
-				}
+				let ret = this.initData(selected.area_code, this.listLevel2, this.listLocation2);
 				this.listLevel3 = [];
 				this.listLevel4 = [];
 				this.listLevel5 = [];
@@ -112,20 +102,17 @@
 				});
 				return selected;
 			},
+			showData3: function(name, code) {
+				this.level3 = name;
+				let ret = this.initData(code, this.listLevel4, this.listLocation4);
+			},
 			initData3: function() {
-				if (!this.locating) {
-					this.level3 = '';
-				}
+				this.level3 = '';
 				let selected = this.getSelectedItem2();
 				if (!selected) {
 					return;
 				}
-				let ret = this.initData(selected.area_code);
-				this.listLevel3 = ret.candidates;
-				this.listLocation3 = ret.areaList;
-				if (!this.locating) {
-					this.level4 = '';
-				}
+				let ret = this.initData(selected.area_code, this.listLevel3, this.listLocation3);
 				this.listLevel4 = [];
 				this.listLevel5 = [];
 			},
@@ -136,17 +123,17 @@
 				});
 				return selected;
 			},
+			showData4: function(name, code) {
+				this.level4 = name;
+				let ret = this.initData(code, this.listLevel5, this.listLocation5);
+			},
 			initData4: function() {
-				if (!this.locating) {
-					this.level4 = '';
-				}
+				this.level4 = '';
 				let selected = this.getSelectedItem3();
 				if (!selected) {
 					return;
 				}
-				let ret = this.initData(selected.area_code);
-				this.listLevel4 = ret.candidates;
-				this.listLocation4 = ret.areaList;
+				let ret = this.initData(selected.area_code, this.listLevel4, this.listLocation4);
 				this.listLevel5 = [];
 			},
 			getSelectedItem4: function() {
@@ -157,16 +144,12 @@
 				return selected;
 			},
 			initData5: function() {
-				if (!this.locating) {
-					this.level5 = '';
-				}
+				this.level5 = '';
 				let selected = this.getSelectedItem4();
 				if (!selected) {
 					return;
 				}
-				let ret = this.initData(selected.area_code);
-				this.listLevel5 = ret.candidates;
-				this.listLocation5 = ret.areaList;
+				let ret = this.initData(selected.area_code, this.listLevel5, this.listLocation5);
 			},
 			getSelectedItem5: function() {
 				let innerLevel = this.level5;
@@ -176,9 +159,6 @@
 				return selected;
 			},
 			getLocation: function() {
-				if (this.locating) {
-					return;
-				}
 				let selectedItem = this.getSelectedItem1();
 				if (!selectedItem) {
 					return;
@@ -211,91 +191,101 @@
 				this.latitude = selectedItem.latitude;
 			},
 			getCurrentLocation: function() {
-				this.locating = true;
-				let innerLong = this.longitude;
-				let innerLat = this.latitude;
-				// uni.getLocation({
-				// 	type: 'wgs84',
-				// 	geocode: true,
-				// 	success: function(res) {
-				// 		innerHeight = res.longitude;
-				// 		innerLat = res.latitude;
-				// 	}
-				// });
-				// this.longitude = innerLong;
-				// this.latitude = innerLat;
-				console.log('location:' + this.longitude + ',' + this.latitude);
 				let v = this;
-				this.sendRequest({
-						url: "/cnarea/locate",
-						method: "POST",
-						data: {
-							longtitude: parseFloat(innerLong),
-							latitude: parseFloat(innerLat)
-						},
-						hideLoading: false,
-						success: function(res) {
-							let area = res.area;
-							if (area) {
-								v.levelStore5 = area.name;
-							}
-							area = area.parent;
-							if (area) {
-								v.levelStore4 = area.name;
-							}
-							area = area.parent;
-							if (area) {
-								v.levelStore3 = area.name;
-							}
-							area = area.parent;
-							if (area) {
-								v.levelStore2 = area.name;
-							}
-							area = area.parent;
-							if (area) {
-								v.levelStore1 = area.name;
-							}
-						},
-						fail: function(res) {
-							v.locating = false;
-						}
+				uni.getLocation({
+					type: 'wgs84',
+					geocode: true,
+					success: function(res) {
+						v.longitude = res.longitude;
+						v.latitude = res.latitude;
+						console.log('location:' + v.longitude + ',' + v.latitude);
+						v.locating = true;
+						console.log(v);
+						v.sendRequest({
+								url: "/cnarea/locate",
+								method: "POST",
+								data: {
+									longtitude: v.longitude,
+									latitude: v.latitude
+								},
+								hideLoading: false,
+								success: function(res) {
+									let area = res.area;
+									if (area) {
+										v.showData1(area.parents[3], area.parent_codes[3]);
+										v.showData2(area.parents[2], area.parent_codes[2]);
+										v.showData3(area.parents[1], area.parent_codes[1]);
+										v.showData4(area.parents[0], area.parent_codes[0]);
+										v.level5 = area.name;
+									}
+								},
+								fail: function(res) {
+									v.locating = false;
+								}
+							},
+							"", "");
 					},
-					"", "");
+					fail: function() {
+						uni.showToast({
+							title: '获取地址失败，将导致部分功能不可用',
+							icon: 'none'
+						});
+					}
+
+				});
+
 			},
 		},
 		watch: {
 			level1: {
 				handler(newVal) {
 					this.inputVal = newVal;
-					this.initData2();
-					this.getLocation();
+					if (!this.locating) {
+						console.log("watch level1:" + new Date().valueOf());
+						this.initData2();
+						this.getLocation();
+					}
 				}
 			},
 			level2: {
 				handler(newVal) {
 					this.inputVal = newVal;
-					this.initData3();
-					this.getLocation();
+					if (!this.locating) {
+						console.log("watch level2:" + new Date().valueOf());
+						this.initData3();
+						this.getLocation();
+					}
 				}
 			},
 			level3: {
 				handler(newVal) {
 					this.inputVal = newVal;
-					this.initData4();
-					this.getLocation();
+					if (!this.locating) {
+						console.log("watch level3:" + new Date().valueOf());
+						this.initData4();
+						this.getLocation();
+					}
 				}
 			},
 			level4: {
 				handler(newVal) {
 					this.inputVal = newVal;
-					this.initData5();
-					this.getLocation();
+					if (!this.locating) {
+						console.log("watch level4:" + new Date().valueOf());
+						this.initData5();
+						this.getLocation();
+					}
 				}
 			},
 			level5: {
 				handler(newVal) {
 					this.inputVal = newVal;
-					this.getLocation();
+					if (!this.locating) {
+						console.log("watch level5:" + new Date().valueOf());
+						this.getLocation();
+					} else {
+						this.locating = false;
+					}
 				}
 			},
 		}

@@ -18,9 +18,9 @@ func ClearOverdueFiles() {
 		return
 	}
 	defer c.Unlock()
-	fileInfoList, err := ioutil.ReadDir(config.Config.AvatarConfig.AvatarFileLocalPath)
+	fileInfoList, err := ioutil.ReadDir(config.Config.AvatarConfig.AvatarFileFolderPath)
 	if err != nil {
-		log.Print("can't read path:", config.Config.AvatarConfig.AvatarFileLocalPath)
+		log.Print("can't read path:", config.Config.AvatarConfig.AvatarFileFolderPath)
 		return
 	}
 	limitTime := time.Now().Add(time.Duration(-config.Config.AvatarConfig.AvatarSaveDuration) * time.Minute)

@@ -32,7 +32,7 @@ func Generate(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	filePath := config.Config.AvatarConfig.AvatarFileLocalPath
+	filePath := config.Config.AvatarConfig.AvatarFileFolderPath
 	if !strings.HasSuffix(filePath, string(os.PathSeparator)) {
 		filePath += string(os.PathSeparator)
 	}

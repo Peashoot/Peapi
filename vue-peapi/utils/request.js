@@ -44,17 +44,25 @@ var sendRequest = function(param, backpage, backtype) {
 		success: res => {
 			// console.log("网络请求success:" + JSON.stringify(res));
 			if (res.statusCode && res.statusCode != 200) { //api错误
-				uni.showModal({
-					content: "" + res.errMsg
-				});
+				if (res.data && res.data.message) {
+					uni.showModal({
+						content: "" + res.data.message
+					});
+				} else {
+					uni.showModal({
+						content: "" + res.errMsg
+					});
+				}
+				typeof param.fail == "function" && param.fail(res.data);
 				return;
 			}
 			if (res.data.code) { //返回结果码code判断:0成功,1错误
-				if (res.data.code != "200") {
+				if (res.data.code != 200) {
 					uni.showModal({
 						showCancel: false,
 						content: "" + res.data.message
 					});
+					typeof param.fail == "function" && param.fail(res.data);
 					return;
 				}
 			} else {
@@ -62,6 +70,7 @@ var sendRequest = function(param, backpage, backtype) {
 					showCancel: false,
 					content: "No ResultCode:" + res.data.message
 				});
+				typeof param.fail == "function" && param.fail(res.data);
 				return;
 			}
 			typeof param.success == "function" && param.success(res.data);

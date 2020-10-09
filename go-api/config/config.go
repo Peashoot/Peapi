@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"os"
 )
 
 // RunConfig 运行参数
@@ -37,7 +38,7 @@ type SwaggerConfig struct {
 
 // AvatarConfig 头像api配置参数
 type AvatarConfig struct {
-	AvatarFileLocalPath  string `json:"local_path"`    // 头像文件夹本地路径
+	AvatarFileFolderPath string `json:"local_path"`    // 头像文件夹本地路径
 	AvatarFileNetURL     string `json:"net_url"`       // 头像网络路径
 	AvatarSaveDuration   int    `json:"save_duration"` // 头像文件缓存时间（单位：分钟）
 	AvatarCleanEventCron string `json:"clean_cron"`    // 头像定时清理任务轮询cron规则
@@ -49,15 +50,23 @@ var Config *RunConfig
 // DefaultConfig 获取默认配置
 func DefaultConfig() *RunConfig {
 	return &RunConfig{
-		DebugMode:  true,
+		DebugMode:  false,
 		ListenPort: 8080,
 		DatabaseConfig: DatabaseConfig{
 			DBHost: "127.0.0.1",
 			DBName: "peapi",
 		},
-		WebhookConfig: WebhookConfig{},
+		WebhookConfig: WebhookConfig{
+			WebHookSecret:    "PeashootWithGo",
+			WebHookShellPath: "/usr/share/webhook.sh",
+		},
 		SwaggerConfig: SwaggerConfig{},
-		AvatarConfig:  AvatarConfig{},
+		AvatarConfig: AvatarConfig{
+			AvatarCleanEventCron: "0/10 * * * * ?",
+			AvatarFileFolderPath: "/usr/share/avatars",
+			AvatarFileNetURL:     "http://127.0.0.1:8089",
+			AvatarSaveDuration:   15,
+		},
 	}
 }
 
@@ -71,6 +80,10 @@ func ReadConfig(jsonPath string) {
 	}
 	if err = json.Unmarshal(jsonBytes, Config); err != nil {
 		log.Println("Failure to unmarshal json configuration file. Detail of error is", err)
+		return
+	}
+	if err := os.MkdirAll(Config.AvatarConfig.AvatarFileFolderPath, os.ModePerm); err != nil {
+		log.Println("Failure to create avatar file folder. Detail of error is", err)
 	}
 	return
 }
