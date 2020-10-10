@@ -1,6 +1,7 @@
 <template>
 	<view class="container">
 		<button @click="jumpCnarea">CNAREA</button>
+		<button @click="jumpAvatar">AVATAR</button>
 	</view>
 </template>
 
@@ -14,6 +15,9 @@
 		methods: {
 			jumpCnarea: function() {
 				this.$Router.push({name: 'cnarea'})
+			},
+			jumpAvatar: function() {
+				this.$Router.push({name: 'avatar'})
 			}
 		}
 	}

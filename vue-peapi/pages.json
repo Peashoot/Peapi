@@ -9,6 +9,11 @@
 		"style": {
 			"navigationBarTitleText": "CNAREA"
 		}
+	}, {
+		"path": "pages/avatar/avatar",
+		"style": {
+			"navigationBarTitleText": "AVATAR"
+		}
 	}],
 	"globalStyle": {
 		"navigationBarTextStyle": "white",

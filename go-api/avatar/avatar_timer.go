@@ -26,7 +26,7 @@ func ClearOverdueFiles() {
 	limitTime := time.Now().Add(time.Duration(-config.Config.AvatarConfig.AvatarSaveDuration) * time.Minute)
 	for _, fileInfo := range fileInfoList {
 		if fileInfo.ModTime().Before(limitTime) {
-			if err := os.Remove(fileInfo.Name()); err != nil {
+			if err := os.Remove(GetAvatarFilePath(fileInfo.Name())); err != nil {
 				log.Print("failure to delete overdue file:", fileInfo.Name(), "err is:", err.Error())
 			}
 			log.Print("delete overdue file:", fileInfo.Name())

@@ -1,6 +1,7 @@
 package avatar
 
 import (
+	"math/rand"
 	"net/http"
 	"os"
 	"strings"
@@ -19,10 +20,18 @@ type generateRequestDTO struct {
 
 type generateResponseDTO struct {
 	common.BaseResponse
-	ImgURL string `json:"imgUrl"` // 图片URL
+	ImgName string `json:"imgName"` // 图片名称
+	ImgURL  string `json:"imgUrl"`  // 图片URL
 }
 
-// Generate 处理头像生成
+// Generate 生成头像
+// @Summary 生成头像
+// @Description 输入性别用户名等信息生成卡通头像
+// @Param factor body generateRequestDTO true "生成因子"
+// @Accept json
+// @Produce json
+// @Success 200 {object} generateResponseDTO
+// @Router /avatar/generate [post]
 func Generate(c *gin.Context) {
 	response := &generateResponseDTO{}
 	response.Code = 500
@@ -32,16 +41,17 @@ func Generate(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	filePath := config.Config.AvatarConfig.AvatarFileFolderPath
-	if !strings.HasSuffix(filePath, string(os.PathSeparator)) {
-		filePath += string(os.PathSeparator)
-	}
 	fileName := strings.Replace(uuid.NewV4().String(), "-", "", -1) + ".png"
-	filePath += fileName
+	filePath := GetAvatarFilePath(fileName)
 	sex := govatar.FEMALE
-	arr := []string{"man", "nan", "男"}
-	if common.IndexOf(arr, strings.ToLower(request.Sex)) > 0 {
+	if rand.Int()%2 == 1 {
 		sex = govatar.MALE
+	}
+	arr := []string{"man", "nan", "男"}
+	if common.IndexOf(arr, strings.ToLower(request.Sex)) >= 0 {
+		sex = govatar.MALE
+	} else if arr = []string{"woman", "female", "女"}; common.IndexOf(arr, strings.ToLower(request.Sex)) >= 0 {
+		sex = govatar.FEMALE
 	}
 	if "" == request.Username {
 		if err := govatar.GenerateFile(sex, filePath); err != nil {
@@ -60,6 +70,17 @@ func Generate(c *gin.Context) {
 	}
 	response.Code = 200
 	response.Message = "OK"
+	response.ImgName = fileName
 	response.ImgURL = netURL + fileName
 	c.JSON(http.StatusOK, response)
+}
+
+// GetAvatarFilePath 获取头像文件路径
+func GetAvatarFilePath(fileName string) string {
+	filePath := config.Config.AvatarConfig.AvatarFileFolderPath
+	if !strings.HasSuffix(filePath, string(os.PathSeparator)) {
+		filePath += string(os.PathSeparator)
+	}
+	filePath += fileName
+	return filePath
 }

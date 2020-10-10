@@ -88,10 +88,10 @@ func transformDOToDTOWithParant(area DO) (areaWithParentDTO, error) {
 // List 条件查询区域信息
 // @Summary 查询区域信息
 // @Description 通过父级区域代码、邮政编码等查询条件分页查询符合条件的区域信息
-// @Param condition body queryConditionDTO true "查询条件"
+// @Param condition body listRequestDTO true "查询条件"
 // @Accept json
 // @Produce json
-// @Success 200 {object} queryResultDTO
+// @Success 200 {object} listResponseDTO
 // @Router /cnarea/list [post]
 func List(c *gin.Context) {
 	resp := &listResponseDTO{}
@@ -152,6 +152,13 @@ type locateResponseDTO struct {
 }
 
 // Locate 定位
+// Summary 定位
+// @Description 根据经纬度查询最相近的区域名称及父级区域信息
+// @Param coordinate body locateRequestDTO true "坐标"
+// @Accept json
+// @Produce json
+// @Success 200 {object} locateResponseDTO
+// @Router /cnarea/locate [post]
 func Locate(c *gin.Context) {
 	resp := locateResponseDTO{}
 	resp.Code = 400

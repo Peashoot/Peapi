@@ -16,6 +16,7 @@ func RegisterRouter(engine *gin.Engine) {
 	engine.POST("/cnarea/locate", cnarea.Locate)
 	engine.POST("/webhook/execute", webhook.Exceute)
 	engine.POST("/avatar/generate", avatar.Generate)
+	engine.Static("/avatars/file", config.Config.AvatarConfig.AvatarFileFolderPath)
 	if config.Config.SwaggerConfig.SwaggerEnabled {
 		engine.GET("swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}

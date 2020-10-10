@@ -7,14 +7,20 @@ const home = [
 		meta: {
 			title: '首页',
 		},
-	},
-	{
+	}, {
 		path: '/pages/cnarea/cnarea',
 		alias: '/cnarea', 
 		name: 'cnarea',
 		meta: {
-			title: '列表',
+			title: '区域',
 		},
+	}, {
+		path: '/pages/avatar/avatar',
+		alias: '/avatar',
+		name: 'avatar',
+		meta: {
+			title: '头像',
+		}
 	}
 ]
 
