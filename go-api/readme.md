@@ -1,0 +1,4 @@
+- cnarea: 区域查询，经纬度查询
+- avatar: 随机生成像素风头像
+- webhook: 监听github代码提交事件
+- download: 离线下载

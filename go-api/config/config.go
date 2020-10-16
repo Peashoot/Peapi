@@ -15,6 +15,7 @@ type RunConfig struct {
 	WebhookConfig  WebhookConfig  `json:"webhook"`     // webhook配置参数
 	SwaggerConfig  SwaggerConfig  `json:"swagger"`     // swagger配置参数
 	AvatarConfig   AvatarConfig   `json:"avatar"`      // 头像api配置参数
+	DownloadConfig DownloadConfig `json:"download"`    // 离线下载配置参数
 }
 
 // DatabaseConfig 数据库配置参数
@@ -44,6 +45,12 @@ type AvatarConfig struct {
 	AvatarCleanEventCron string `json:"clean_cron"`    // 头像定时清理任务轮询cron规则
 }
 
+// DownloadConfig 离线下载配置文件
+type DownloadConfig struct {
+	Aria2RpcURL string `json:"aria2_rpc"`    // aria2 RPC 请求地址
+	Aria2Secret string `json:"aria2_secret"` // aria2 RPC 密钥
+}
+
 // Config 配置项
 var Config *RunConfig
 
@@ -66,6 +73,10 @@ func DefaultConfig() *RunConfig {
 			AvatarFileFolderPath: "/usr/share/avatars",
 			AvatarFileNetURL:     "http://127.0.0.1:8089",
 			AvatarSaveDuration:   15,
+		},
+		DownloadConfig: DownloadConfig{
+			Aria2RpcURL: "http://127.0.0.1:6800/jsonrpc",
+			Aria2Secret: "",
 		},
 	}
 }
