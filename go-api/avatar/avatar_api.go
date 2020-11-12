@@ -64,10 +64,8 @@ func Generate(c *gin.Context) {
 			return
 		}
 	}
-	netURL := config.Config.AvatarConfig.AvatarFileNetURL
-	if !strings.HasSuffix(netURL, "/") {
-		netURL += "/"
-	}
+	netURL := strings.TrimSuffix(config.Config.HostName, "/") + "/" +
+		strings.Trim(config.Config.AvatarConfig.AvatarFileNetURL, "/") + "/"
 	response.Code = 200
 	response.Message = "OK"
 	response.ImgName = fileName

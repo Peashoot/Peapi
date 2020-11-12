@@ -4,3 +4,4 @@ unpackage
 node_modules
 tmp
 main.exe
+go-api/peapi

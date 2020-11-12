@@ -11,6 +11,7 @@ import (
 	"github.com/peashoot/peapi/common"
 	"github.com/peashoot/peapi/config"
 	_ "github.com/peashoot/peapi/docs"
+	"github.com/peashoot/peapi/picture"
 	"github.com/peashoot/peapi/router"
 )
 
@@ -38,6 +39,9 @@ func startTimer() *common.Crontab {
 	crontab := common.NewCrontab()
 	if err := crontab.AddByFunc("clear avatar", config.Config.AvatarConfig.AvatarCleanEventCron, avatar.ClearOverdueFiles); err != nil {
 		log.Print("fail to start timer of clear avatar, err is:", err)
+	}
+	if err := crontab.AddByFunc("clear picture", config.Config.PictureOperateConfig.PictureCleanEventCron, picture.ClearOverdueFiles); err != nil {
+		log.Print("fail to start timer of clear picture, err is:", err)
 	}
 	crontab.Start()
 	return crontab
