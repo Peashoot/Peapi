@@ -2,3 +2,5 @@
 - avatar: 随机生成像素风头像
 - webhook: 监听github代码提交事件
 - download: 离线下载
+- picture: 图片处理
+- file: 文件上传
