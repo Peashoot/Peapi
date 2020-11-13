@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -54,9 +55,9 @@ func UploadFile(c *gin.Context) {
 	} else {
 		panic("data verification failed")
 	}
-	localFolderPath := strings.TrimSuffix(config.Config.FileUploadConfig.FileStoreFolder, string(os.PathSeparator)) + string(os.PathSeparator) + filetype
+	localFolderPath := path.Join(config.Config.FileUploadConfig.FileStoreFolder, filetype)
 	os.MkdirAll(localFolderPath, os.ModePerm)
-	localFilePath := localFolderPath + string(os.PathSeparator) + filename
+	localFilePath := path.Join(localFolderPath, filename)
 	fileHeader := form.File["file"][0]
 	file, err := fileHeader.Open()
 	if err != nil {
@@ -107,9 +108,9 @@ func DownloadFile(fileURL string, filetype string) (renameFilename string, local
 		retErr = err
 		return
 	}
-	localFolderPath := strings.TrimSuffix(config.Config.FileUploadConfig.FileStoreFolder, string(os.PathSeparator)) + string(os.PathSeparator) + filetype
+	localFolderPath := path.Join(config.Config.FileUploadConfig.FileStoreFolder, filetype)
 	os.MkdirAll(localFolderPath, os.ModePerm)
-	localFilePath = localFolderPath + string(os.PathSeparator) + renameFilename
+	localFilePath = path.Join(localFolderPath, renameFilename)
 	localFile, err := os.Create(localFilePath)
 	if err != nil {
 		retErr = err

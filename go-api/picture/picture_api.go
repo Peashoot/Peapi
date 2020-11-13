@@ -3,7 +3,7 @@ package picture
 import (
 	"log"
 	"net/http"
-	"os"
+	"path"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -64,8 +64,7 @@ func FillImgWithWords(c *gin.Context) {
 		panic("invalid original image url")
 	}
 	newImgName := strings.ReplaceAll(uuid.NewV4().String(), "-", "") + "." + suffix
-	newImgPath := strings.TrimSuffix(config.Config.PictureOperateConfig.PictureGenerateFolder, string(os.PathSeparator)) +
-		string(os.PathSeparator) + newImgName
+	newImgPath := path.Join(config.Config.PictureOperateConfig.PictureGenerateFolder, newImgName)
 	if err := FillWordsIntoPic(oriImgPath, newImgPath, req.FillWords, config.Config.PictureOperateConfig.PictureGenerateFonts[req.Font], req.Scale, req.Step); err != nil {
 		panic(err)
 	}
