@@ -43,6 +43,7 @@ func FillImgWithWords(c *gin.Context) {
 	if err := c.BindJSON(&req); err != nil {
 		panic(err)
 	}
+	checkImgURL(req.OriImgURL)
 	suffix := req.OriImgURL[strings.LastIndexByte(req.OriImgURL, '.')+1:]
 	if common.IndexOf([]string{"png", "jpg", "gif", "bmp"}, suffix) < 0 {
 		panic("invalid original image suffix")
@@ -75,4 +76,11 @@ func FillImgWithWords(c *gin.Context) {
 	resp.Message = "OK"
 	resp.ResultImgURL = newImgURL
 	c.JSON(http.StatusOK, resp)
+}
+
+// checkImgURL 检查图片url
+func checkImgURL(imgURL string) {
+	if strings.Contains(imgURL, "..") || strings.Contains(imgURL, "./") || strings.Contains(imgURL, "/.") {
+		panic("unvalid image url")
+	}
 }
